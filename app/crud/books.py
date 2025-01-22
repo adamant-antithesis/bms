@@ -3,11 +3,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
 
-from app.models import Book
+from app.models import Book, Author
 from app.schemas.books import BookSchema, BookDeleteResponse
 
 
 async def create_book(db: AsyncSession, title: str, genre: str, published_year: int, author_id: int):
+    result = await db.execute(select(Author).filter(Author.id == author_id))
+    existing_author = result.scalars().first()
+
+    if not existing_author:
+        raise HTTPException(status_code=404, detail=f"Author with id {author_id} does not exist.")
 
     db_book = Book(title=title, genre=genre, published_year=published_year, author_id=author_id)
     db.add(db_book)
@@ -16,9 +21,6 @@ async def create_book(db: AsyncSession, title: str, genre: str, published_year: 
 
     result = await db.execute(select(Book).filter(Book.id == db_book.id).options(selectinload(Book.author)))
     db_book_with_author = result.scalars().first()
-
-    if not db_book_with_author:
-        raise HTTPException(status_code=404, detail="Book not found")
 
     return BookSchema.from_orm(db_book_with_author)
 

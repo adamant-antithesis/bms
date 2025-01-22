@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from app.routers import authors, books
+from app.routers import authors, books, imports
 from app.database import AsyncSessionLocal
 
 app = FastAPI(
@@ -28,6 +28,7 @@ async def db_session_middleware(request, call_next):
 
 app.include_router(authors.router, prefix="/api/authors", tags=["Authors"])
 app.include_router(books.router, prefix="/api/books", tags=["Books"])
+app.include_router(imports.router, prefix="/api/imports", tags=["Import"])
 
 
 # Test Root

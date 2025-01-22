@@ -1,0 +1,104 @@
+{
+    "authors": [
+        {
+            "id": 1,
+            "name": "J.K. Rowling",
+            "books": [
+                {
+                    "id": 1,
+                    "title": "Harry Potter and the Philosopher's Stone",
+                    "genre": "Fantasy",
+                    "published_year": 1997,
+                    "author_id": 1
+                },
+                {
+                    "id": 2,
+                    "title": "Harry Potter and the Chamber of Secrets",
+                    "genre": "Fantasy",
+                    "published_year": 1998,
+                    "author_id": 1
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "name": "George Orwell",
+            "books": [
+                {
+                    "id": 3,
+                    "title": "1984",
+                    "genre": "Dystopian",
+                    "published_year": 1949,
+                    "author_id": 2
+                },
+                {
+                    "id": 4,
+                    "title": "Animal Farm",
+                    "genre": "Political Satire",
+                    "published_year": 1945,
+                    "author_id": 2
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "name": "J.R.R. Tolkien",
+            "books": [
+                {
+                    "id": 5,
+                    "title": "The Hobbit",
+                    "genre": "Fantasy",
+                    "published_year": 1937,
+                    "author_id": 3
+                },
+                {
+                    "id": 6,
+                    "title": "The Lord of the Rings",
+                    "genre": "Fantasy",
+                    "published_year": 1954,
+                    "author_id": 3
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "name": "Jane Austen",
+            "books": [
+                {
+                    "id": 7,
+                    "title": "Pride and Prejudice",
+                    "genre": "Romance",
+                    "published_year": 1813,
+                    "author_id": 4
+                },
+                {
+                    "id": 8,
+                    "title": "Sense and Sensibility",
+                    "genre": "Romance",
+                    "published_year": 1811,
+                    "author_id": 4
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "name": "Mark Twain",
+            "books": [
+                {
+                    "id": 9,
+                    "title": "The Adventures of Tom Sawyer",
+                    "genre": "Adventure",
+                    "published_year": 1876,
+                    "author_id": 5
+                },
+                {
+                    "id": 10,
+                    "title": "Adventures of Huckleberry Finn",
+                    "genre": "Adventure",
+                    "published_year": 1884,
+                    "author_id": 5
+                }
+            ]
+        }
+    ]
+}
