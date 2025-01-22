@@ -1,6 +1,9 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.schemas.books import BookSchema, BookCreate, BookUpdate
+from app.schemas.books import (BookSchema,
+                               BookCreate,
+                               BookUpdate,
+                               BookDeleteResponse)
 from app.crud.books import (create_book,
                             get_book_by_id,
                             get_books_list,
@@ -33,6 +36,6 @@ async def update_book_view(book_id: int, book: BookUpdate, db: AsyncSession = De
                                    published_year=book.published_year, author_id=book.author_id)
 
 
-@router.delete("/books/{book_id}", response_model=BookSchema)
+@router.delete("/books/{book_id}", response_model=BookDeleteResponse)
 async def delete_book_view(book_id: int, db: AsyncSession = Depends(get_db)):
     return await delete_book_by_id(db=db, book_id=book_id)

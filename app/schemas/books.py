@@ -2,6 +2,8 @@ from pydantic import BaseModel, conint
 from enum import Enum
 from typing import Optional
 
+from app.schemas.authors import AuthorSchema
+
 
 class GenreEnum(str, Enum):
     fiction = "Fiction"
@@ -34,8 +36,13 @@ class BookUpdate(BookBase):
     author_id: Optional[int] = None
 
 
+class BookDeleteResponse(BaseModel):
+    message: str
+
+
 class BookSchema(BookBase):
     id: int
+    author: AuthorSchema
 
     class Config:
         from_orm = True
