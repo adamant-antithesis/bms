@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from app.routers import authors, books
+from app.database import AsyncSessionLocal
 
 app = FastAPI(
     title="Book Management System",
@@ -20,12 +21,9 @@ app.add_middleware(
 
 @app.middleware("http")
 async def db_session_middleware(request, call_next):
-    from app.database import SessionLocal
-    request.state.db = SessionLocal()
-    try:
+    async with AsyncSessionLocal() as session:
+        request.state.db = session
         response = await call_next(request)
-    finally:
-        request.state.db.close()
     return response
 
 app.include_router(authors.router, prefix="/api/authors", tags=["Authors"])
