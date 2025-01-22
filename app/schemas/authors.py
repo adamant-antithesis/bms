@@ -6,7 +6,7 @@ class AuthorBase(BaseModel):
     name: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class AuthorCreate(AuthorBase):
@@ -17,9 +17,8 @@ class AuthorUpdate(AuthorBase):
     name: Optional[str] = None
 
 
-class Author(AuthorBase):
+class AuthorSchema(AuthorBase):
     id: int
-    books: List[str] = []
 
     class Config:
-        orm_mode = True
+        from_orm = True

@@ -20,7 +20,7 @@ class BookBase(BaseModel):
     author_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class BookCreate(BookBase):
@@ -34,8 +34,8 @@ class BookUpdate(BookBase):
     author_id: Optional[int] = None
 
 
-class Book(BookBase):
+class BookSchema(BookBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_orm = True
