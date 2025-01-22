@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.schemas.authors import AuthorSchema, AuthorCreate
+from app.schemas.authors import (AuthorSchema,
+                                 AuthorCreate,
+                                 AuthorDeleteResponse)
 from app.crud.authors import (create_author,
                               get_author_by_id,
                               get_authors_list,
@@ -33,6 +35,6 @@ async def update_author_route(author_id: int, author: AuthorCreate, db: AsyncSes
     return await update_author_by_id(db=db, author_id=author_id, name=author.name)
 
 
-@router.delete("/authors/{author_id}", response_model=AuthorSchema)
+@router.delete("/authors/{author_id}", response_model=AuthorDeleteResponse)
 async def delete_author_route(author_id: int, db: AsyncSession = Depends(get_db)):
     return await delete_author_by_id(db=db, author_id=author_id)
