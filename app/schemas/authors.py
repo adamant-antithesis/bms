@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import Optional
 
 
 class AuthorBase(BaseModel):
@@ -15,6 +15,10 @@ class AuthorCreate(AuthorBase):
 
 class AuthorUpdate(AuthorBase):
     name: Optional[str] = None
+
+
+class AuthorDeleteResponse(BaseModel):
+    message: str
 
 
 class AuthorSchema(AuthorBase):
