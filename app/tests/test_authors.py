@@ -13,6 +13,7 @@ load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 base_url = "http://127.0.0.1:8000/"
+LOGIN_URL = "/api/auth/token"
 
 
 @pytest_asyncio.fixture(scope="module")
@@ -43,11 +44,23 @@ def client():
     app.dependency_overrides.clear()
 
 
+async def login(client):
+    login_data = {
+        "username": "test_user",
+        "password": "test_password"
+    }
+    response = await client.post(LOGIN_URL, data=login_data)
+    assert response.status_code == 200, f"Login failed: {response.text}"
+    return response.json()["access_token"]
+
+
 @pytest.mark.asyncio
 async def test_create_author_route(test_db):
-    endpoint = "api/authors/"
-
     async with AsyncClient(base_url=base_url) as client:
+        access_token = await login(client)
+        client.headers["Authorization"] = f"Bearer {access_token}"
+
+        endpoint = "api/authors/"
         response = await client.post(endpoint, json={"name": "Test Author"})
         assert response.status_code == 200, response.text
         data = response.json()
@@ -59,6 +72,9 @@ async def test_create_author_route(test_db):
 @pytest.mark.asyncio
 async def test_get_authors_route(test_db):
     async with AsyncClient(base_url=base_url) as client:
+        access_token = await login(client)
+        client.headers["Authorization"] = f"Bearer {access_token}"
+
         create_response_1 = await client.post("/api/authors/", json={"name": "Author 1"})
         create_response_2 = await client.post("/api/authors/", json={"name": "Author 2"})
 
@@ -76,6 +92,9 @@ async def test_get_authors_route(test_db):
 @pytest.mark.asyncio
 async def test_get_author_by_id_route(test_db):
     async with AsyncClient(base_url=base_url) as client:
+        access_token = await login(client)
+        client.headers["Authorization"] = f"Bearer {access_token}"
+
         create_response = await client.post("/api/authors/", json={"name": "Unique Author"})
         author_id = create_response.json()["id"]
 
@@ -92,6 +111,9 @@ async def test_get_author_by_id_route(test_db):
 @pytest.mark.asyncio
 async def test_update_author_route(test_db):
     async with AsyncClient(base_url=base_url) as client:
+        access_token = await login(client)
+        client.headers["Authorization"] = f"Bearer {access_token}"
+
         create_response = await client.post("/api/authors/", json={"name": "Old Name"})
         author_id = create_response.json()["id"]
 
@@ -108,6 +130,9 @@ async def test_update_author_route(test_db):
 @pytest.mark.asyncio
 async def test_delete_author_route(test_db):
     async with AsyncClient(base_url=base_url) as client:
+        access_token = await login(client)
+        client.headers["Authorization"] = f"Bearer {access_token}"
+
         create_response = await client.post("/api/authors/", json={"name": "To Be Deleted"})
         author_id = create_response.json()["id"]
 
@@ -118,4 +143,3 @@ async def test_delete_author_route(test_db):
 
         get_response = await client.get(f"/api/authors/{author_id}")
         assert get_response.status_code == 404
-
