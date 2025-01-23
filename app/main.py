@@ -3,14 +3,33 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 from starlette.middleware.cors import CORSMiddleware
-
-from app.routers import authors, books, imports
+from app.routers import authors, books, imports, auth
 from app.database import AsyncSessionLocal
+from app.models import User
+from passlib.context import CryptContext
+from sqlalchemy.future import select
+
+bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+async def create_test_user():
+    async with AsyncSessionLocal() as db:
+        result = await db.execute(select(User).where(User.username == "test_user"))
+        user = result.scalars().first()
+
+        if not user:
+            hashed_password = bcrypt_context.hash("test_password")
+            new_user = User(username="test_user", hashed_password=hashed_password)
+            db.add(new_user)
+            await db.commit()
+            print("Test user created successfully")
+
 
 app = FastAPI(
     title="Book Management System",
     description="API Books Management",
     version="1.0.0",
+    on_startup=[create_test_user]
 )
 
 app.add_middleware(
@@ -32,6 +51,7 @@ async def db_session_middleware(request, call_next):
 app.include_router(authors.router, prefix="/api/authors", tags=["Authors"])
 app.include_router(books.router, prefix="/api/books", tags=["Books"])
 app.include_router(imports.router, prefix="/api/imports", tags=["Import"])
+app.include_router(auth.router, prefix="/api", tags=["auth"])
 
 
 @app.exception_handler(RequestValidationError)

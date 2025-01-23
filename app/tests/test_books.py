@@ -13,6 +13,7 @@ load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 base_url = "http://127.0.0.1:8000/"
+LOGIN_URL = "/api/auth/token"
 
 
 @pytest_asyncio.fixture(scope="module")
@@ -43,9 +44,22 @@ def client():
     app.dependency_overrides.clear()
 
 
+async def login(client):
+    login_data = {
+        "username": "test_user",
+        "password": "test_password"
+    }
+    response = await client.post(LOGIN_URL, data=login_data)
+    assert response.status_code == 200, f"Login failed: {response.text}"
+    return response.json()["access_token"]
+
+
 @pytest.mark.asyncio
 async def test_create_book_route(test_db):
     async with AsyncClient(base_url=base_url) as client:
+        access_token = await login(client)
+        client.headers["Authorization"] = f"Bearer {access_token}"
+
         endpoint = "api/books/"
 
         author_response = await client.post("/api/authors/", json={"name": "Test Author"})
@@ -72,6 +86,9 @@ async def test_create_book_route(test_db):
 @pytest.mark.asyncio
 async def test_get_books_route(test_db):
     async with AsyncClient(base_url=base_url) as client:
+        access_token = await login(client)
+        client.headers["Authorization"] = f"Bearer {access_token}"
+
         author_response = await client.post("/api/authors/", json={"name": "Author 1"})
         author_id = author_response.json()["id"]
 
@@ -105,6 +122,9 @@ async def test_get_books_route(test_db):
 @pytest.mark.asyncio
 async def test_get_book_by_id_route(test_db):
     async with AsyncClient(base_url=base_url) as client:
+        access_token = await login(client)
+        client.headers["Authorization"] = f"Bearer {access_token}"
+
         author_response = await client.post("/api/authors/", json={"name": "Unique Author"})
         author_id = author_response.json()["id"]
 
@@ -132,6 +152,9 @@ async def test_get_book_by_id_route(test_db):
 @pytest.mark.asyncio
 async def test_update_book_route(test_db):
     async with AsyncClient(base_url=base_url) as client:
+        access_token = await login(client)
+        client.headers["Authorization"] = f"Bearer {access_token}"
+
         author_response = await client.post("/api/authors/", json={"name": "Old Author"})
         author_id = author_response.json()["id"]
 
@@ -164,6 +187,9 @@ async def test_update_book_route(test_db):
 @pytest.mark.asyncio
 async def test_delete_book_route(test_db):
     async with AsyncClient(base_url=base_url) as client:
+        access_token = await login(client)
+        client.headers["Authorization"] = f"Bearer {access_token}"
+
         author_response = await client.post("/api/authors/", json={"name": "To Be Deleted"})
         author_id = author_response.json()["id"]
 

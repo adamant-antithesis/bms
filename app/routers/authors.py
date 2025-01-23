@@ -1,3 +1,4 @@
+from typing import Annotated
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.schemas.authors import (AuthorSchema,
@@ -9,12 +10,14 @@ from app.crud.authors import (create_author,
                               update_author_by_id,
                               delete_author_by_id)
 from app.database import get_db
+from app.routers.auth import get_current_user
 
 router = APIRouter()
+user_dependency = Annotated[dict, Depends(get_current_user)]
 
 
 @router.post("/", response_model=AuthorSchema)
-async def create_author_route(author: AuthorCreate, db: AsyncSession = Depends(get_db)):
+async def create_author_route(user: user_dependency, author: AuthorCreate, db: AsyncSession = Depends(get_db)):
     return await create_author(db=db, name=author.name)
 
 
@@ -31,10 +34,10 @@ async def get_author_route(author_id: int, db: AsyncSession = Depends(get_db)):
 
 
 @router.put("/{author_id}", response_model=AuthorSchema)
-async def update_author_route(author_id: int, author: AuthorCreate, db: AsyncSession = Depends(get_db)):
+async def update_author_route(user: user_dependency, author_id: int, author: AuthorCreate, db: AsyncSession = Depends(get_db)):
     return await update_author_by_id(db=db, author_id=author_id, name=author.name)
 
 
 @router.delete("/{author_id}", response_model=AuthorDeleteResponse)
-async def delete_author_route(author_id: int, db: AsyncSession = Depends(get_db)):
+async def delete_author_route(user: user_dependency, author_id: int, db: AsyncSession = Depends(get_db)):
     return await delete_author_by_id(db=db, author_id=author_id)
