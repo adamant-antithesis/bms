@@ -22,28 +22,47 @@ async def create_author(db: AsyncSession, name: str):
         await db.commit()
         await db.refresh(db_author)
     except Exception as e:
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+        raise HTTPException(status_code=500, detail="An unexpected error occurred while processing your request")
 
     return AuthorSchema.from_orm(db_author)
 
 
 async def get_author_by_id(db: AsyncSession, author_id: int):
-    result = await db.execute(select(Author).filter(Author.id == author_id))
-    author = result.scalars().first()
+    try:
+        result = await db.execute(select(Author).filter(Author.id == author_id))
+        author = result.scalars().first()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="An unexpected error occurred while processing your request")
 
     if author is None:
-        raise HTTPException(status_code=404, detail=f"Author with id {author_id} not found")
+        raise HTTPException(status_code=404, detail=f"Author with id: {author_id} not found")
 
     return author
 
 
 async def get_authors_list(db: AsyncSession, skip: int = 0, limit: int = 10):
-    result = await db.execute(select(Author).offset(skip).limit(limit))
+    try:
+        result = await db.execute(select(Author).offset(skip).limit(limit))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="An unexpected error occurred while processing your request")
     return result.scalars().all()
 
 
 async def update_author_by_id(db: AsyncSession, author_id: int, name: str):
-    db_author = await get_author_by_id(db, author_id)
+    try:
+        db_author = await get_author_by_id(db, author_id)
+
+        existing_author = await db.execute(select(Author).filter(Author.name == name))
+        existing_author = existing_author.scalars().first()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="An unexpected error occurred while processing your request")
+
+    if existing_author:
+        raise HTTPException(status_code=400, detail=f"Author with name '{name}' already exists.")
+
+    if db_author is None:
+        raise HTTPException(status_code=404, detail=f"Author with id: {author_id} not found")
+
     if db_author:
         db_author.name = name
         await db.commit()
@@ -52,19 +71,22 @@ async def update_author_by_id(db: AsyncSession, author_id: int, name: str):
 
 
 async def delete_author_by_id(db: AsyncSession, author_id: int):
-    db_author = await get_author_by_id(db, author_id)
+    try:
+        db_author = await get_author_by_id(db, author_id)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="An unexpected error occurred while processing your request")
 
     if db_author is None:
-        raise HTTPException(status_code=404, detail=f"Author with id {author_id} not found")
+        raise HTTPException(status_code=404, detail=f"Author with id: {author_id} not found")
 
     result = await db.execute(select(Book).filter(Book.author_id == author_id))
     books = result.scalars().all()
 
     if books:
         raise HTTPException(status_code=400,
-                            detail=f"Author with id {author_id} has books and can't be deleted, delete books first")
+                            detail=f"Author with id: {author_id} has books and can't be deleted, delete books first")
 
     await db.delete(db_author)
     await db.commit()
 
-    return {"message": f"Author with id {author_id} successfully deleted"}
+    return {"message": f"Author with id: {author_id} successfully deleted"}

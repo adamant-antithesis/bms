@@ -3,7 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.schemas.books import (BookSchema,
                                BookCreate,
                                BookUpdate,
-                               BookDeleteResponse)
+                               BookDeleteResponse,
+                               BookFilterParams)
 from app.crud.books import (create_book,
                             get_book_by_id,
                             get_books_list,
@@ -21,8 +22,24 @@ async def create_book_view(book: BookCreate, db: AsyncSession = Depends(get_db))
 
 
 @router.get("/", response_model=list[BookSchema])
-async def get_books_view(skip: int = 0, limit: int = 10, db: AsyncSession = Depends(get_db)):
-    return await get_books_list(db=db, skip=skip, limit=limit)
+async def get_books_view(
+    skip: int = 0,
+    limit: int = 10,
+    filter_params: BookFilterParams = Depends(),
+    db: AsyncSession = Depends(get_db),
+):
+    return await get_books_list(
+        db=db,
+        skip=skip,
+        limit=limit,
+        title=filter_params.title,
+        author_name=filter_params.author_name,
+        genre=filter_params.genre,
+        year_from=filter_params.year_from,
+        year_to=filter_params.year_to,
+        sort_by=filter_params.sort_by,
+        sort_order=filter_params.sort_order,
+    )
 
 
 @router.get("/{book_id}", response_model=BookSchema)
