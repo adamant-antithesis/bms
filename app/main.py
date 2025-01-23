@@ -3,7 +3,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 from starlette.middleware.cors import CORSMiddleware
-from app.routers import authors, books, imports, auth
+from app.routers import authors, books, imports, auth, exports
 from app.database import AsyncSessionLocal
 from app.models import User
 from passlib.context import CryptContext
@@ -52,6 +52,7 @@ app.include_router(authors.router, prefix="/api/authors", tags=["Authors"])
 app.include_router(books.router, prefix="/api/books", tags=["Books"])
 app.include_router(imports.router, prefix="/api/imports", tags=["Import"])
 app.include_router(auth.router, prefix="/api", tags=["auth"])
+app.include_router(exports.router, prefix="/api/exports", tags=["exports"])
 
 
 @app.exception_handler(RequestValidationError)
