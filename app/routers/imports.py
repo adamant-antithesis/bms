@@ -1,17 +1,21 @@
 import csv
 import json
 from io import StringIO
-from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
+from fastapi import APIRouter, UploadFile, File, HTTPException, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from app.database import get_db
 from app.models import Author, Book
+from app.utils.rate_limit import rate_limit
 
 router = APIRouter()
 
 
 @router.post("/csv/")
-async def import_books_and_authors_csv(file: UploadFile = File(...), db: AsyncSession = Depends(get_db)):
+async def import_books_and_authors_csv(request: Request, file: UploadFile = File(...),
+                                       db: AsyncSession = Depends(get_db)):
+    user_ip = request.client.host
+    rate_limit(user_ip=user_ip)
     try:
         contents = await file.read()
         csv_file = StringIO(contents.decode("utf-8"))
@@ -81,7 +85,9 @@ async def import_books_and_authors_csv(file: UploadFile = File(...), db: AsyncSe
 
 
 @router.post("/json/")
-async def import_books_and_authors_json(file: UploadFile, db: AsyncSession = Depends(get_db)):
+async def import_books_and_authors_json(request: Request, file: UploadFile, db: AsyncSession = Depends(get_db)):
+    user_ip = request.client.host
+    rate_limit(user_ip=user_ip)
     try:
         contents = await file.read()
         data = json.loads(contents)
