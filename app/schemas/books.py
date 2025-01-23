@@ -1,4 +1,4 @@
-from pydantic import BaseModel, conint
+from pydantic import BaseModel, conint, field_validator
 from enum import Enum
 from typing import Optional
 
@@ -26,6 +26,12 @@ class BookBase(BaseModel):
     genre: GenreEnum
     published_year: conint(ge=1800, le=2025)
     author_id: int
+
+    @field_validator("title")
+    def validate_title(cls, value):
+        if not value.strip():
+            raise ValueError("Title cannot be empty or consist only of whitespace.")
+        return value
 
     class Config:
         from_attributes = True

@@ -9,32 +9,45 @@ from app.schemas.books import BookSchema, BookDeleteResponse
 
 
 async def create_book(db: AsyncSession, title: str, genre: str, published_year: int, author_id: int):
+
+    result = await db.execute(select(Book).filter(Book.title == title))
+    existing_book = result.scalars().first()
+
+    if existing_book:
+        raise HTTPException(status_code=400, detail=f"Book with title '{title}' already exists.")
+
     result = await db.execute(select(Author).filter(Author.id == author_id))
     existing_author = result.scalars().first()
 
     if not existing_author:
-        raise HTTPException(status_code=404, detail=f"Author with id {author_id} does not exist.")
+        raise HTTPException(status_code=404, detail=f"Author with id: {author_id} does not exist.")
 
-    db_book = Book(title=title, genre=genre, published_year=published_year, author_id=author_id)
-    db.add(db_book)
-    await db.commit()
-    await db.refresh(db_book)
+    try:
+        db_book = Book(title=title, genre=genre, published_year=published_year, author_id=author_id)
+        db.add(db_book)
+        await db.commit()
+        await db.refresh(db_book)
 
-    result = await db.execute(select(Book).filter(Book.id == db_book.id).options(selectinload(Book.author)))
-    db_book_with_author = result.scalars().first()
+        result = await db.execute(select(Book).filter(Book.id == db_book.id).options(selectinload(Book.author)))
+        db_book_with_author = result.scalars().first()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="An unexpected error occurred while processing your request")
 
     return BookSchema.from_orm(db_book_with_author)
 
 
 async def get_book_by_id(db: AsyncSession, book_id: int):
 
-    result = await db.execute(
-        select(Book).filter(Book.id == book_id).options(selectinload(Book.author))
-    )
-    book = result.scalars().first()
+    try:
+        result = await db.execute(
+            select(Book).filter(Book.id == book_id).options(selectinload(Book.author))
+        )
+        book = result.scalars().first()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="An unexpected error occurred while processing your request")
 
     if not book:
-        raise HTTPException(status_code=404, detail="Book not found")
+        raise HTTPException(status_code=404, detail=f"Book with id: {book_id} not found")
 
     return BookSchema.from_orm(book)
 
@@ -78,14 +91,22 @@ async def get_books_list(
         .limit(limit)
     )
 
-    if sort_by == "author_name":
-        query = query.join(Author).order_by(asc(Author.name) if sort_order == "asc" else desc(Author.name))
-    elif hasattr(Book, sort_by):
-        sort_field = getattr(Book, sort_by)
-        query = query.order_by(asc(sort_field) if sort_order == "asc" else desc(sort_field))
+    if sort_by:
+        if sort_by == "author_name":
+            query = query.join(Author).order_by(
+                asc(Author.name) if sort_order == "asc" else desc(Author.name)
+            )
+        elif hasattr(Book, sort_by):
+            sort_field = getattr(Book, sort_by)
+            query = query.order_by(
+                asc(sort_field) if sort_order == "asc" else desc(sort_field)
+            )
 
-    result = await db.execute(query)
-    books = result.scalars().all()
+    try:
+        result = await db.execute(query)
+        books = result.scalars().all()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="An unexpected error occurred while processing your request")
 
     return [BookSchema.from_orm(book) for book in books]
 
@@ -93,11 +114,20 @@ async def get_books_list(
 async def update_book_by_id(db: AsyncSession, book_id: int, title: str, genre: str, published_year: int,
                             author_id: int):
 
-    result = await db.execute(select(Book).filter(Book.id == book_id).options(selectinload(Book.author)))
-    db_book = result.scalars().first()
+    try:
+        result = await db.execute(select(Book).filter(Book.id == book_id).options(selectinload(Book.author)))
+        db_book = result.scalars().first()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="An unexpected error occurred while processing your request")
 
     if not db_book:
-        raise HTTPException(status_code=404, detail="Book not found")
+        raise HTTPException(status_code=404, detail=f"Book with id: {book_id} not found")
+
+    result = await db.execute(select(Author).filter(Author.id == author_id))
+    existing_author = result.scalars().first()
+
+    if not existing_author:
+        raise HTTPException(status_code=404, detail=f"Author with id: {author_id} does not exist.")
 
     if title:
         db_book.title = title
@@ -118,12 +148,14 @@ async def update_book_by_id(db: AsyncSession, book_id: int, title: str, genre: s
 
 
 async def delete_book_by_id(db: AsyncSession, book_id: int):
-
-    result = await db.execute(select(Book).filter(Book.id == book_id).options(selectinload(Book.author)))
-    db_book = result.scalars().first()
+    try:
+        result = await db.execute(select(Book).filter(Book.id == book_id).options(selectinload(Book.author)))
+        db_book = result.scalars().first()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="An unexpected error occurred while processing your request")
 
     if not db_book:
-        raise HTTPException(status_code=404, detail="Book not found")
+        raise HTTPException(status_code=404, detail=f"Book with id: {book_id} not found")
 
     await db.delete(db_book)
     await db.commit()
