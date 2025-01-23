@@ -2,7 +2,8 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
-
+from sqlalchemy import and_, asc, desc
+from typing import Optional
 from app.models import Book, Author
 from app.schemas.books import BookSchema, BookDeleteResponse
 
@@ -38,15 +39,52 @@ async def get_book_by_id(db: AsyncSession, book_id: int):
     return BookSchema.from_orm(book)
 
 
-async def get_books_list(db: AsyncSession, skip: int = 0, limit: int = 10):
+async def get_books_list(
+    db: AsyncSession,
+    skip: int = 0,
+    limit: int = 10,
+    title: Optional[str] = None,
+    author_name: Optional[str] = None,
+    genre: Optional[str] = None,
+    year_from: Optional[int] = None,
+    year_to: Optional[int] = None,
+    sort_by: Optional[str] = None,
+    sort_order: Optional[str] = "asc",
+):
+    filters = []
 
-    result = await db.execute(
+    if title:
+        filters.append(Book.title.ilike(f"%{title}%"))
+    if genre:
+        filters.append(Book.genre.ilike(f"%{genre}%"))
+    if year_from is not None:
+        filters.append(Book.published_year >= year_from)
+    if year_to is not None:
+        filters.append(Book.published_year <= year_to)
+
+    if author_name:
+        author_result = await db.execute(select(Author.id).filter(Author.name.ilike(f"%{author_name}%")))
+        author_ids = author_result.scalars().all()
+        if author_ids:
+            filters.append(Book.author_id.in_(author_ids))
+        else:
+            return []
+
+    query = (
         select(Book)
         .options(selectinload(Book.author))
+        .where(and_(*filters) if filters else True)
         .offset(skip)
         .limit(limit)
     )
 
+    if sort_by == "author_name":
+        query = query.join(Author).order_by(asc(Author.name) if sort_order == "asc" else desc(Author.name))
+    elif hasattr(Book, sort_by):
+        sort_field = getattr(Book, sort_by)
+        query = query.order_by(asc(sort_field) if sort_order == "asc" else desc(sort_field))
+
+    result = await db.execute(query)
     books = result.scalars().all()
 
     return [BookSchema.from_orm(book) for book in books]

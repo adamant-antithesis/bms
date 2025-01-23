@@ -8,11 +8,17 @@ from app.schemas.authors import AuthorSchema
 class GenreEnum(str, Enum):
     fiction = "Fiction"
     non_fiction = "Non-Fiction"
+    adventure = "Adventure"
     science = "Science"
     history = "History"
     biography = "Biography"
     fantasy = "Fantasy"
     mystery = "Mystery"
+    dystopian = "Dystopian"
+    romance = "Romance"
+    satire = "Satire"
+    political_satire = "Political Satire"
+    classic = "Classic"
 
 
 class BookBase(BaseModel):
@@ -46,3 +52,13 @@ class BookSchema(BookBase):
 
     class Config:
         from_orm = True
+
+
+class BookFilterParams(BaseModel):
+    title: Optional[str] = None
+    author_name: Optional[str] = None
+    genre: Optional[str] = None
+    year_from: Optional[int] = None
+    year_to: Optional[int] = None
+    sort_by: Optional[str] = None
+    sort_order: Optional[str] = "asc"
