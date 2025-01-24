@@ -80,7 +80,7 @@ env example:
     git clone https://github.com/adamant-antithesis/bms.git
     cd project-directory
 
-2. Create .env file with the following content:
+2.Create .env file with the following content:
 
 
     DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/bms_db
