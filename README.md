@@ -65,6 +65,8 @@ env example:
     Docs: http://127.0.0.1:8000/docs
     Redoc: http://127.0.0.1:8000/redoc
 
+![Authentication and Import](./gif/auth-import.gif)
+
 9. Create new user and login (check the gif):
     
     Create user - http://localhost:8000/api/auth/
@@ -106,6 +108,8 @@ env example:
     Main path: http://localhost:8000
     Docs: http://localhost:8000/docs
     Redoc: http://localhost:8000/redoc
+
+![Authentication and Import](./gif/auth-import.gif)
 
 6. Create new user and login (check the gif):
     
