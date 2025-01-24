@@ -65,13 +65,17 @@ env example:
     Docs: http://127.0.0.1:8000/docs
     Redoc: http://127.0.0.1:8000/redoc
 
-9. Import some books:
+9. Create new user and login (check the gif):
+    
+    Create user - http://localhost:8000/api/auth/
+
+10.Import some books (check the gif):
 
     Place file from directory "import_templates" to this path of csv or json import
    - http://127.0.0.1:8000/api/imports/csv/
    - http://127.0.0.1:8000/api/imports/json/
 
-10. Enjoy! P.S to run tests use - pytest
+11. Enjoy! P.S to run tests use - pytest
 
 - Running in Docker
 
@@ -103,10 +107,14 @@ env example:
     Docs: http://localhost:8000/docs
     Redoc: http://localhost:8000/redoc
 
-6. Import some books:
+6. Create new user and login (check the gif):
+    
+    Create user - http://localhost:8000/api/auth/
+
+7. Import some books (check the gif):
 
     Place file from directory "import_templates" to this path of csv or json import
    - http://localhost:8000/api/imports/csv/
    - http://localhost:8000/api/imports/json/
     
-7. Enjoy! P.S to run tests use - pytest
+8.Enjoy! P.S to run tests use - pytest
