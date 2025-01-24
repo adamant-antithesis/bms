@@ -107,11 +107,13 @@ env example:
     Docs: http://localhost:8000/docs
     Redoc: http://localhost:8000/redoc
 
-6. Create new user and login (check the gif):
+![Authentication and Import](./gif/auth-import.gif)
+
+7. Create new user and login (check the gif):
     
     Create user - http://localhost:8000/api/auth/
 
-7. Import some books (check the gif):
+8. Import some books (check the gif):
 
     Place file from directory "import_templates" to this path of csv or json import
    - http://localhost:8000/api/imports/csv/
