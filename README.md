@@ -67,7 +67,7 @@ env example:
 
 ![Authentication and Import](./gif/auth-import.gif)
 
-10. Create new user and login (check the gif):
+9. Create new user and login (check the gif):
     
     Create user - http://localhost:8000/api/auth/
 
@@ -111,11 +111,11 @@ env example:
 
 ![Authentication and Import](./gif/auth-import.gif)
 
-7. Create new user and login (check the gif):
+6. Create new user and login (check the gif):
     
     Create user - http://localhost:8000/api/auth/
 
-8. Import some books (check the gif):
+7. Import some books (check the gif):
 
     Place file from directory "import_templates" to this path of csv or json import
    - http://localhost:8000/api/imports/csv/
