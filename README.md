@@ -77,7 +77,7 @@ env example:
    - http://127.0.0.1:8000/api/imports/csv/
    - http://127.0.0.1:8000/api/imports/json/
 
-11. Enjoy! P.S to run tests use - pytest
+11. Enjoy! P.S. to run tests use - pytest
 
 - Running in Docker
 
@@ -121,4 +121,4 @@ env example:
    - http://localhost:8000/api/imports/csv/
    - http://localhost:8000/api/imports/json/
     
-8.Enjoy! P.S to run tests use - pytest
+8.Enjoy! P.S. to run tests use - pytest
