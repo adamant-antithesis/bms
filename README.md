@@ -4,6 +4,50 @@ Book Management System
 This project is a FastAPI-based application with a PostgreSQL database. 
 You can run it either locally or within a Docker container.
 
+- Running in Docker
+
+1.Clone the repository:
+
+    git clone https://github.com/adamant-antithesis/bms.git
+    cd project-directory
+
+2.Create .env file with the following content:
+
+
+    DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/bms_db
+    DOCKER_DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/bms_db
+    SECRET_KEY=your-secret-key(example: P1xu93OwD2b8mRl5rIxaBfg6ydQy1QFl1rL9YjmNug8=)
+    POSTGRES_USER=user(example: postgres)
+    POSTGRES_PASSWORD=userpassword(example: postgres)
+    POSTGRES_DB=dbname(example: bms_db)
+
+
+3.Build and run the Docker container:
+
+    docker-compose up --build
+
+4.Wait for the database to be ready.
+
+5. Access the API:
+
+    Main path: http://localhost:8000
+    Docs: http://localhost:8000/docs
+    Redoc: http://localhost:8000/redoc
+
+![Authentication and Import](./gif/auth-import.gif)
+
+6. Create new user and login (check the gif):
+    
+    Create user - http://localhost:8000/api/auth/
+
+7. Import some books (check the gif):
+
+    Place file from directory "import_templates" to this path of csv or json import
+   - http://localhost:8000/api/imports/csv/
+   - http://localhost:8000/api/imports/json/
+    
+8.Enjoy! P.S. to run tests use - pytest
+
 - Local Setup
 
 Prerequisites:
@@ -78,47 +122,3 @@ env example:
    - http://127.0.0.1:8000/api/imports/json/
 
 11. Enjoy! P.S. to run tests use - pytest
-
-- Running in Docker
-
-1.Clone the repository:
-
-    git clone https://github.com/adamant-antithesis/bms.git
-    cd project-directory
-
-2.Create .env file with the following content:
-
-
-    DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/bms_db
-    DOCKER_DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/bms_db
-    SECRET_KEY=your-secret-key(example: P1xu93OwD2b8mRl5rIxaBfg6ydQy1QFl1rL9YjmNug8=)
-    POSTGRES_USER=user(example: postgres)
-    POSTGRES_PASSWORD=userpassword(example: postgres)
-    POSTGRES_DB=dbname(example: bms_db)
-
-
-3.Build and run the Docker container:
-
-    docker-compose up --build
-
-4.Wait for the database to be ready.
-
-5. Access the API:
-
-    Main path: http://localhost:8000
-    Docs: http://localhost:8000/docs
-    Redoc: http://localhost:8000/redoc
-
-![Authentication and Import](./gif/auth-import.gif)
-
-6. Create new user and login (check the gif):
-    
-    Create user - http://localhost:8000/api/auth/
-
-7. Import some books (check the gif):
-
-    Place file from directory "import_templates" to this path of csv or json import
-   - http://localhost:8000/api/imports/csv/
-   - http://localhost:8000/api/imports/json/
-    
-8.Enjoy! P.S. to run tests use - pytest
