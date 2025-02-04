@@ -4,6 +4,12 @@ Book Management System
 This project is a FastAPI-based application with a PostgreSQL database. 
 You can run it either locally or within a Docker container.
 
+Prerequisites:
+
+Python 3.10 or higher
+PostgreSQL database
+pip and virtualenv
+
 - Running in Docker
 
 1.Clone the repository:
@@ -48,13 +54,8 @@ You can run it either locally or within a Docker container.
     
 8.Enjoy! P.S. to run tests use - pytest
 
+
 - Local Setup
-
-Prerequisites:
-
-Python 3.10 or higher
-PostgreSQL database
-pip and virtualenv
 
 Steps to Run Locally:
 
